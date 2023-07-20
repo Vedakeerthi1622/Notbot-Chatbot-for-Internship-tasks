@@ -1,0 +1,51 @@
+import requests
+import json
+import re
+
+def send_message(phone_number, message):
+    url = " https://wa.me/message/XUKOGT7D7NP7D1 ".format(phone_number, message)
+    response = requests.get(url)
+    return response.status_code
+
+def main():
+    phone_number = "9492675118"
+    chat_id = "9390964288"
+    data = {}
+
+    user_input = "Hi!"
+    while user_input != "/stop":
+        if user_input == "/apply":
+            response = send_message(phone_number, "Hi! Are you here to apply for the Internship?")
+            if response == 200:
+                user_input = input()
+                if user_input == "YES":
+                    name = input("Please enter your Name: ")
+                    if not re.match(r"^[a-zA-Z]+$", name):
+                        send_message(phone_number, "Please enter a valid name.")
+                        continue
+                    email = input("Please enter your email ID: ")
+                    if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+$", email):
+                        send_message(phone_number, "Please enter a valid email ID.")
+                        continue
+                    experience = input("Please select how many years of experience you have with Python/JS/Automation Development: ")
+                    if experience not in ["1", "2", "3", "4", "5"]:
+                        send_message(phone_number, "Please select a valid experience.")
+                        continue
+
+                    data["name"] = name
+                    data["email"] = email
+                    data["experience"] = experience
+                    with open("data.json", "w") as f:
+                        json.dump(data, f)
+                    send_message(phone_number, "Thanks for connecting. We will get back to you shortly.")
+                else:
+                    send_message(phone_number, "Thank you for your interest.")
+            else:
+                send_message(phone_number, "Sorry, there was an error sending your message.")
+        else:
+            send_message(phone_number, "I don't understand your request.")
+        user_input = input()
+
+if __name__ == "__main__":
+    main()
+    print("Chatbot is running...")
